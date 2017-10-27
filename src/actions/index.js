@@ -1,3 +1,4 @@
+import { push } from 'react-router-redux';
 import Auth from '../lib/auth';
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
@@ -43,6 +44,18 @@ export const logoutAsync = () => dispatch => {
     dispatch(receiveLogout());
 };
 
+export const handleAuthCallbackAsync = () => dispatch => {
+    Auth.handleAuthentication((err, data) => {
+        if (err) {
+            dispatch(loginError(`${err.error}: ${err.errorDescription}`));
+            return;
+        }
+
+        dispatch(loginSuccess(data));
+        dispatch(push('/'));
+    });
+};
+
 export const getProfileAsync = () => dispatch => {
     Auth.getProfile((err, profile) => {
         dispatch(receiveProfile(profile));
@@ -51,6 +64,7 @@ export const getProfileAsync = () => dispatch => {
 
 export default {
     getProfile: getProfileAsync,
+    handleAuthCallback: handleAuthCallbackAsync,
     login: loginAsync,
     loginError,
     loginSuccess,
